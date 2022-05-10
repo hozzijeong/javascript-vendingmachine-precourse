@@ -1,10 +1,5 @@
-import { setInitialPresent } from "./storage/initialPresent.js";
-
-export default function Vendingmachine() {
-    this.init = () => {
-        setInitialPresent();
-    };
+function init() {
+    const $app = document.getElementById("app");
 }
 
-const vending = new Vendingmachine();
-vending.init();
+init();
