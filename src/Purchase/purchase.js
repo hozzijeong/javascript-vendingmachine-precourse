@@ -1,4 +1,5 @@
 import { setObjectLocalStorage } from "../Storage/localStorage.js";
+import { returnCoins } from "../Storage/returnCoin.js";
 
 export default function Purchase($app, initialState) {
     this.state = initialState;
@@ -26,9 +27,20 @@ export default function Purchase($app, initialState) {
         $charge.value = "";
         insertRender(this.state.charge);
     };
-    const change = (e) => {};
+    const change = (e) => {
+        const { charge } = this.state; // 거슬러 줄 돈
+        const result = returnCoins(this.state.coin, charge); // 남은 코인 개수들임
+        console.log(result);
+        [500, 100, 50, 10, "amount"].forEach((x, i) => {
+            this.state.coin[x] = this.state.coin[x] - result[i]; // 나머지 코인들과 그 결과값의 합
+        });
+        this.state.charge = 0;
+        setObjectLocalStorage("Coin", this.state.coin);
+        setObjectLocalStorage("Charge", this.state.charge);
+        insertRender(this.state.charge);
+    };
     const purchase = (e) => {
-        const $tr = e.target.closest(`tr`);
+        const $tr = e.target.closest(`.${ID.purchaseItem}`);
         const [name, price, quantity] = [...$tr.childNodes].filter(
             (x) => x.nodeType === 1,
         );
@@ -128,7 +140,6 @@ export default function Purchase($app, initialState) {
     };
 
     const insertRender = (charge) => {
-        console.log(charge);
         const $insert = document.getElementById(ID.chargeAmount);
         $insert.innerHTML = `투입한 금액: ${charge}`;
     };
@@ -141,7 +152,7 @@ export default function Purchase($app, initialState) {
         );
         for (const object of Object.entries(product)) {
             const $tr = createTr(object);
-            $tbody.innerHTML += $tr;
+            $tbody.insertAdjacentHTML("beforeend", $tr);
         }
     };
     const createTr = (object) => {

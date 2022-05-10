@@ -38,7 +38,9 @@ export default function Coin($app, initialState) {
 
     const renderAmount = () => {
         const $amount = document.getElementById(ID.amount);
-        $amount.innerHTML = `보유 금액: ${this.state ? this.state.amount : ""}`;
+        $amount.innerHTML = `보유 금액: ${
+            this.state ? (isNaN(this.state.amount) ? 0 : this.state.amount) : ""
+        }`;
     };
 
     const calcRandomCoin = (value) => {
