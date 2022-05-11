@@ -1,5 +1,5 @@
 import { setObjectLocalStorage } from "../Storage/localStorage.js";
-
+import { checkNumber, checkDivideTen } from "../Storage/validation.js";
 export default function Coin($app, initialState) {
     this.state = initialState.coin;
     const ID = {
@@ -15,6 +15,8 @@ export default function Coin($app, initialState) {
     const onclick = (e) => {
         const $input = document.getElementById(ID.input);
         let value = parseInt($input.value);
+        if (!checkNumber(value) || !checkDivideTen(value))
+            return alert("입력 금액을 확인해주세요");
         calcRandomCoin(value);
         renderAmount();
         setObjectLocalStorage("Coin", this.state);

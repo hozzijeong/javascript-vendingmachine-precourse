@@ -1,5 +1,9 @@
 import { setObjectLocalStorage } from "../Storage/localStorage.js";
-
+import {
+    checkNumber,
+    checkString,
+    checkDivideTen,
+} from "../Storage/validation.js";
 export default function Manage($app, initialState) {
     this.state = initialState.product;
     this.key = "";
@@ -8,22 +12,28 @@ export default function Manage($app, initialState) {
         const $div = [...e.target.closest("div").childNodes];
         const inputs = $div.filter((x) => x instanceof HTMLInputElement);
         const [inputName, inputPrice, inputQuantity] = [...inputs];
-        // 같은 이름과 추가되는 값이 다름
-        this.state[inputName.value] = this.state[inputName.value]
+        const inputVal = inputName.value.trim();
+        if (!checkString(inputVal)) return alert("상품명을 다시 입력해주세요");
+        if (!checkNumber(inputPrice.value) || !checkDivideTen(inputPrice.value))
+            return alert("가격을 다시 입력해주세요");
+        if (!checkNumber(inputQuantity.value))
+            return alert("수량을 다시 입력해주세요");
+
+        this.state[inputVal] = this.state[inputVal]
             ? {
                   price:
-                      inputPrice.value != this.state[inputName.value].price
+                      inputPrice.value != this.state[inputVal].price
                           ? inputPrice.value
-                          : this.state[inputName.value].price,
+                          : this.state[inputVal].price,
                   quantity:
                       parseInt(inputQuantity.value) +
-                      parseInt(this.state[inputName.value].quantity),
+                      parseInt(this.state[inputVal].quantity),
               }
             : {
                   price: inputPrice.value,
                   quantity: inputQuantity.value,
               };
-        this.key = inputName.value;
+        this.key = inputVal;
         setObjectLocalStorage("Product", this.state);
 
         renderTable(this.state);

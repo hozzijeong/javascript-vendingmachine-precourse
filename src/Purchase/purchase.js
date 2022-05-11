@@ -1,5 +1,6 @@
 import { setObjectLocalStorage } from "../Storage/localStorage.js";
 import { returnCoins } from "../Storage/returnCoin.js";
+import { checkNumber, checkDivideTen } from "../Storage/validation.js";
 
 export default function Purchase($app, initialState) {
     this.state = initialState;
@@ -22,6 +23,9 @@ export default function Purchase($app, initialState) {
     const insert = (e) => {
         const $charge = document.getElementById(ID.chargeInput);
         const value = parseInt($charge.value); // 여기서 유효성 검사
+        if (!checkNumber(value) || !checkDivideTen(value))
+            return alert("투입 금액을 확인해주세요");
+
         this.state.charge = this.state.charge + value;
         setObjectLocalStorage("Charge", this.state.charge);
         $charge.value = "";
@@ -29,8 +33,8 @@ export default function Purchase($app, initialState) {
     };
     const change = (e) => {
         const { charge } = this.state; // 거슬러 줄 돈
+
         const result = returnCoins(this.state.coin, charge); // 남은 코인 개수들임
-        console.log(result);
         for (const [key, value] of Object.entries(result)) {
             this.state.coin[key] = this.state.coin[key] - value;
         }
