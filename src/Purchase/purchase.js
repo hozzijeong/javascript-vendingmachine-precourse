@@ -31,13 +31,15 @@ export default function Purchase($app, initialState) {
         const { charge } = this.state; // 거슬러 줄 돈
         const result = returnCoins(this.state.coin, charge); // 남은 코인 개수들임
         console.log(result);
-        [500, 100, 50, 10, "amount"].forEach((x, i) => {
-            this.state.coin[x] = this.state.coin[x] - result[i]; // 나머지 코인들과 그 결과값의 합
-        });
+        for (const [key, value] of Object.entries(result)) {
+            this.state.coin[key] = this.state.coin[key] - value;
+        }
+
         this.state.charge = 0;
         setObjectLocalStorage("Coin", this.state.coin);
         setObjectLocalStorage("Charge", this.state.charge);
         insertRender(this.state.charge);
+        coinBoardRender(result);
     };
     const purchase = (e) => {
         const $tr = e.target.closest(`.${ID.purchaseItem}`);
@@ -170,7 +172,7 @@ export default function Purchase($app, initialState) {
         `;
     };
 
-    const coinBoardRender = () => {
+    const coinBoardRender = (result) => {
         const $tbody = [
             ...document.getElementById(ID.returnButton).closest("div")
                 .childNodes,
@@ -179,15 +181,15 @@ export default function Purchase($app, initialState) {
             .querySelector("tbody");
 
         if ($tbody.firstChild) {
-            const fifhundred = document.getElementById(ID.fifhundred);
+            const fifhundred = document.getElementById(ID.fifHundred);
             const hundred = document.getElementById(ID.hundred);
             const fifth = document.getElementById(ID.fifth);
             const ten = document.getElementById(ID.ten);
 
-            fifhundred.textContent = `${this.state["500"]}개`;
-            hundred.textContent = `${this.state["100"]}개`;
-            fifth.textContent = `${this.state["50"]}개`;
-            ten.textContent = `${this.state["10"]}개`;
+            fifhundred.textContent = `${result["500"]}개`;
+            hundred.textContent = `${result["100"]}개`;
+            fifth.textContent = `${result["50"]}개`;
+            ten.textContent = `${result["10"]}개`;
         } else {
             [
                 { name: "500", id: ID.fifHundred },
