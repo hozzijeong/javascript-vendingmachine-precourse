@@ -50,11 +50,26 @@ export default function Purchase($app, initialState) {
         const [name, price, quantity] = [...$tr.childNodes].filter(
             (x) => x.nodeType === 1,
         );
-        this.state.product[name.textContent].quantity -= 1;
-        this.state.charge = this.state.charge - parseInt(price.textContent);
+        console.log(name.dataset);
+        this.state.product[name.dataset.productName].quantity -= 1;
+        this.state.charge =
+            this.state.charge - parseInt(price.dataset.productPrice);
         setObjectLocalStorage("Product", this.state.product);
         setObjectLocalStorage("Charge", this.state.charge);
-        quantity.textContent = this.state.product[name.textContent].quantity;
+        $tr.innerHTML = `
+            <td class=${ID.purchaseName} data-product-name=${
+            name.dataset.productName
+        }>${name.dataset.productName}</td>
+            <td class=${ID.purchasePrice} data-product-price=${
+            price.dataset.productPrice
+        }>${price.dataset.productPrice}</td>
+            <td class=${ID.purchaseQuantity} data-product-quantity= ${
+            parseInt(quantity.dataset.productQuantity) - 1
+        }>${parseInt(quantity.dataset.productQuantity) - 1}</td>
+            <td>
+                <button class=${ID.purchaseButton}>구매하기</button>
+            </td>
+        `;
         insertRender(this.state.charge);
     };
     this.init = () => {
@@ -87,10 +102,10 @@ export default function Purchase($app, initialState) {
         $input.id = ID.chargeInput;
         $input.placeholder = "투입할 금액";
 
-        const $amount = document.createElement("p");
-        $amount.id = ID.chargeAmount;
+        const $p = document.createElement("p");
 
-        [$input, $addButton, $amount].forEach((x) =>
+        $p.innerHTML = `투입한 금액: <span id=${ID.chargeAmount}></span>`;
+        [$input, $addButton, $p].forEach((x) =>
             $insertContainer.appendChild(x),
         );
         return $insertContainer;
@@ -147,7 +162,7 @@ export default function Purchase($app, initialState) {
 
     const insertRender = (charge) => {
         const $insert = document.getElementById(ID.chargeAmount);
-        $insert.innerHTML = `투입한 금액: ${charge}`;
+        $insert.textContent = `${charge}`;
     };
 
     const purchaseBoardRender = () => {
@@ -163,12 +178,12 @@ export default function Purchase($app, initialState) {
     };
     const createTr = (object) => {
         const [key, value] = object;
-
+        console.log(object);
         return `
             <tr class = ${ID.purchaseItem}>
-                <td class=${ID.purchaseName} data='data-product-name'>${key}</td>
-                <td class=${ID.purchasePrice} data='data-product-price'>${value.price}</td>
-                <td class=${ID.purchaseQuantity} data='data-product-quantity'>${value.quantity}</td>
+                <td class=${ID.purchaseName} data-product-name=${key}>${key}</td>
+                <td class=${ID.purchasePrice} data-product-price=${value.price}>${value.price}</td>
+                <td class=${ID.purchaseQuantity} data-product-quantity=${value.quantity}>${value.quantity}</td>
                 <td>
                     <button class=${ID.purchaseButton}>구매하기</button>
                 </td>
